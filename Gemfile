@@ -28,6 +28,10 @@ gem 'spring',        group: :development
 
 gem 'bootstrap-sass'
 
+gem 'awesome_print'
+
+gem 'active_model_serializers'
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 

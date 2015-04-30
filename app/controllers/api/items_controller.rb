@@ -2,14 +2,14 @@ class Api::ItemsController < ApiController
   before_action :authenticated?
 
   def index
-    list = List.find(:list_id)
+    list = List.find(params[:list_id])
     items = list.items
     render json: items, each_serializer: ItemSerializer
   end
 
   def update
-    item = Item.find(params[:id)
-    if item.update(name: params[:name], list: params[:list_id])
+    item = Item.find(params[:id])
+    if item.update(item_params)
       render json: item
     else
       render json: { errors: item.errors.full_messages }, status: :unprocessable_entity
@@ -17,7 +17,8 @@ class Api::ItemsController < ApiController
   end
 
   def create
-    item = Item.new(name: params[:name], list_id: params[:list_id])
+    list = List.find(params[:list_id])
+    item = list.items.build(item_params)
     if item.save
       render json: item
     else
@@ -27,7 +28,7 @@ class Api::ItemsController < ApiController
 
   private
 
-  # def item_params
-  #   params.require(:item).permit(:name, :list_id)
-  # end
+  def item_params
+    params.require(:item).permit(:name)
+  end
 end

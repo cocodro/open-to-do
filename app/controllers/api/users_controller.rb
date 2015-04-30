@@ -8,7 +8,7 @@ class Api::UsersController < ApiController
   end
 
   def create
-    user = User.new(email: params[:email], password: params[:password])
+    user = User.new(user_params)
 
     if user.save
       render json: user
@@ -30,7 +30,7 @@ class Api::UsersController < ApiController
 
   private
 
-  # def user_params
-  #   params.require(:user).permit(:email, :password)
-  # end
+  def user_params
+    params.require(:user).permit(:email, :password)
+  end
 end

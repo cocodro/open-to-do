@@ -1,6 +1,6 @@
 class Api::ListsController < ApiController
   before_action :authenticated?
-  before_action :require_update_permission, :only => [:update]
+  before_action :require_update_permission?, :only => [:update]
 
   def index
     user = User.find(params[:user_id])
@@ -10,7 +10,8 @@ class Api::ListsController < ApiController
 
   def create
     user = User.find(params[:user_id])
-    user.lists.build(list_params)
+    list = user.lists.build(list_params)
+    
     if list.save
       render json: list
     else
@@ -44,8 +45,8 @@ class Api::ListsController < ApiController
     params.require(:list).permit(:title)
   end
 
-  def require_update_permission
+  def require_update_permission?
     list = List.find(params[:id])
-    unless list.public? || list.user.id == params[:user_id]
+    !(list.public? || list.user.id == params[:user_id])
   end
 end

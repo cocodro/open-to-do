@@ -7,6 +7,15 @@ class Api::ItemsController < ApiController
     render json: items, each_serializer: ItemSerializer
   end
 
+  def update
+    item = Item.find(params[:id)
+    if item.update(name: params[:name], list: params[:list_id])
+      render json: item
+    else
+      render json: { errors: item.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
+
   def create
     item = Item.new(name: params[:name], list_id: params[:list_id])
     if item.save

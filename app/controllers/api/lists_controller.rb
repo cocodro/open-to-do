@@ -1,15 +1,26 @@
 class Api::ListsController < ApiController
   before_action :authenticated?
+  before_action :require_update_permission, :only => [:update]
 
   def index
-    user = User.find(params[:id])
+    user = User.find(params[:user_id])
     lists = user.lists
     render json: lists, each_serializer: ListSerializer
   end
 
   def create
-    list = List.new(title: params[:title], user_id: params[:user_id])
+    user = User.find(params[:user_id])
+    user.lists.build(list_params)
     if list.save
+      render json: list
+    else
+      render json: { errors: list.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
+
+  def update
+    list = List.find(params[:id])
+    if list.update(list_params)
       render json: list
     else
       render json: { errors: list.errors.full_messages }, status: :unprocessable_entity
@@ -29,7 +40,12 @@ class Api::ListsController < ApiController
 
   private
 
-  # def list_params
-  #   params.require(:list).permit(:title, :user_id)
-  # end
+  def list_params
+    params.require(:list).permit(:title)
+  end
+
+  def require_update_permission
+    list = List.find(params[:id])
+    unless list.public? || list.user.id == params[:user_id]
+  end
 end
